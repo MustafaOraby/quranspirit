@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from 'next/link';
+import { FaPlay } from 'react-icons/fa';
 
 import Moshaf from "../../../public/images/moshaf.png";
 import Image from "next/image";
-import Link from "next/link";
 import { TiStarburstOutline } from "react-icons/ti";
 
 import { Reciter, AllReciters } from "../../utils/types";

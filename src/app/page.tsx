@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FaQuran, FaMicrophone, FaBroadcastTower, FaBook } from 'react-icons/fa';
+import { FaQuran, FaBroadcastTower, FaBook } from 'react-icons/fa';
 
 export default function Home() {
   const features = [

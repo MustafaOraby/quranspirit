@@ -10,25 +10,26 @@ import toast from 'react-hot-toast';
 export default function RecitersPage() {
   const [reciters, setReciters] = useState<AllReciters['reciters']>([]);
   const [filteredReciters, setFilteredReciters] = useState<AllReciters['reciters']>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    const loadReciters = async () => {
+      try {
+        const data = await fetchReciters();
+        setReciters(data);
+        setFilteredReciters(data);
+      } catch (error) {
+        console.error('Error loading reciters:', error);
+        setError('Failed to load reciters');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     loadReciters();
   }, []);
-
-  const loadReciters = async () => {
-    try {
-      const data = await fetchReciters();
-      setReciters(data);
-      setFilteredReciters(data);
-      setIsLoading(false);
-    } catch (err) {
-      setError('Failed to load reciters');
-      setIsLoading(false);
-    }
-  };
 
   const normalizeArabicText = (text: string) => {
     return text
@@ -69,7 +70,7 @@ export default function RecitersPage() {
     }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
         <div className="text-center">جاري التحميل...</div>

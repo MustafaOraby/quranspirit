@@ -10,26 +10,27 @@ import toast from 'react-hot-toast';
 export default function RadiosPage() {
   const [radios, setRadios] = useState<Radio[]>([]);
   const [filteredRadios, setFilteredRadios] = useState<Radio[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRadioUrl, setSelectedRadioUrl] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    const loadRadios = async () => {
+      try {
+        const data = await fetchRadios();
+        setRadios(data);
+        setFilteredRadios(data);
+      } catch (error) {
+        console.error('Error loading radios:', error);
+        setError('Failed to load radios');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     loadRadios();
   }, []);
-
-  const loadRadios = async () => {
-    try {
-      const data = await fetchRadios();
-      setRadios(data);
-      setFilteredRadios(data);
-      setIsLoading(false);
-    } catch (err) {
-      setError('Failed to load radios');
-      setIsLoading(false);
-    }
-  };
 
   const normalizeArabicText = (text: string) => {
     return text
@@ -69,7 +70,7 @@ export default function RadiosPage() {
     }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
         <div className="text-center">جاري التحميل...</div>

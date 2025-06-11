@@ -19,7 +19,7 @@ export default function AzkarCategoryPage() {
   const categoryId = Number(params.id);
   const [category, setCategory] = useState<ReturnType<typeof getCategoryById> | null>(null);
   const [counters, setCounters] = useState<{ [key: string]: number }>({});
-  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const playerRefs = useRef<{ [key: string]: AudioPlayer }>({});
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function AzkarCategoryPage() {
         player.audio.current.pause();
       }
     });
-    setCurrentlyPlaying(audioId);
+    setIsPlaying(true);
   };
 
   if (!category) {

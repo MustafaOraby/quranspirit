@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Moon, Sun, Globe } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Menu, X, Moon, Sun } from 'lucide-react';
 import clsx from 'clsx';
+import { FaBars, FaTimes } from 'react-icons/fa';
 
 const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -44,10 +46,6 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          {/* <button aria-label="Toggle Language">
-            <Globe className="w-6 h-6 hover:text-[var(--accent)] transition-colors" />
-          </button> */}
-
           <button onClick={toggleDarkMode} aria-label="Toggle Theme">
             {darkMode ? (
               <Sun className="w-6 h-6 hover:text-[var(--accent)] transition-colors" />

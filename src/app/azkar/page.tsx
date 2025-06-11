@@ -24,6 +24,7 @@ interface Category {
 export default function AzkarPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const audioRefs = useRef<{ [key: string]: HTMLAudioElement }>({});
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const isArabicText = (text: string) => {
     // Regular expression to match Arabic characters and common Arabic symbols

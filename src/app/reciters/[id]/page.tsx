@@ -21,7 +21,8 @@ const SingleAuthorPage = () => {
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
-  const [audioError, setAudioError] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentSurah, setCurrentSurah] = useState<string | null>(null);
   const [loadingTimeout, setLoadingTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -65,7 +66,6 @@ const SingleAuthorPage = () => {
 
   const handleSuwraClick = (url: string, name: string) => {
     setIsAudioLoading(true);
-    setAudioError(false);
     setSuwraUrl(url);
     setCurrentSuwra({ name, id: parseInt(id as string) });
 
@@ -75,7 +75,6 @@ const SingleAuthorPage = () => {
 
     const timeout = setTimeout(() => {
       if (isAudioLoading) {
-        setAudioError(true);
         toast.error('نأسف لهذا توجد مشكلة بالخادم الان .. يرجى المحاوله لاحقا او اختيار قارئ آخر', {
           duration: 5000,
           position: 'top-center',
@@ -95,7 +94,6 @@ const SingleAuthorPage = () => {
 
   const handleAudioLoaded = () => {
     setIsAudioLoading(false);
-    setAudioError(false);
     if (loadingTimeout) {
       clearTimeout(loadingTimeout);
     }
@@ -103,10 +101,6 @@ const SingleAuthorPage = () => {
 
   const handleAudioError = () => {
     setIsAudioLoading(false);
-    setAudioError(true);
-    if (loadingTimeout) {
-      clearTimeout(loadingTimeout);
-    }
     toast.error('نأسف لهذا توجد مشكلة بالخادم الان .. يرجى المحاوله لاحقا او اختيار قارئ آخر', {
       duration: 1500,
       position: 'bottom-center',
