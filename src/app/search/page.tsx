@@ -2,9 +2,9 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { fetchSearchResults } from '@/lib/api';
+import { fetchSearchResults } from '../../lib/api';
 import { useState, useEffect } from 'react';
-import { Radio, Reciter, Surah } from '@/types';
+import { Radio, Reciter, Surah } from '../../types';
 import RadioItem from '@/components/RadioItem';
 import ReciterItem from '@/components/ReciterItem';
 import SurahItem from '@/components/SurahItem';

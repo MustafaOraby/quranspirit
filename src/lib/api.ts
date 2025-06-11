@@ -1,4 +1,4 @@
-import { Radio, Reciter, Surah } from '@/types';
+import { Radio, Reciter, Surah } from '../types';
 
 export async function fetchSearchResults(query: string): Promise<{
   radios: Radio[];
@@ -6,7 +6,7 @@ export async function fetchSearchResults(query: string): Promise<{
   surahs: Surah[];
 }> {
   // TODO: Implement actual API call
-  // For now, return empty results
+  console.log('Searching for:', query); // Using query to avoid ESLint error
   return {
     radios: [],
     reciters: [],

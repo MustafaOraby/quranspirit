@@ -3,12 +3,14 @@ export interface Radio {
   name: string;
   url: string;
   image?: string;
+  country: string;
 }
 
 export interface Reciter {
   id: string;
   name: string;
   image?: string;
+  country: string;
 }
 
 export interface Surah {
@@ -16,4 +18,8 @@ export interface Surah {
   name: string;
   number: number;
   versesCount: number;
+  englishName: string;
+  englishNameTranslation: string;
+  numberOfAyahs: number;
+  revelationType: string;
 } 
