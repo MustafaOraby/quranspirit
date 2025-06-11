@@ -12,21 +12,21 @@ export default function RecitersPage() {
   const [filteredReciters, setFilteredReciters] = useState<AllReciters['reciters']>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+ 
 
   useEffect(() => {
-    const loadReciters = async () => {
-      try {
-        const data = await fetchReciters();
-        setReciters(data);
-        setFilteredReciters(data);
+  const loadReciters = async () => {
+    try {
+      const data = await fetchReciters();
+      setReciters(data);
+      setFilteredReciters(data);
       } catch (error) {
         console.error('Error loading reciters:', error);
-        setError('Failed to load reciters');
+      setError('Failed to load reciters');
       } finally {
         setLoading(false);
-      }
-    };
+    }
+  };
     
     loadReciters();
   }, []);
@@ -49,7 +49,7 @@ export default function RecitersPage() {
 
   const handleSearch = (term: string) => {
     if (term === '' || isArabicText(term)) {
-      setSearchTerm(term);
+      
       const normalizedTerm = normalizeArabicText(term);
       const filtered = reciters.filter(reciter =>
         normalizeArabicText(reciter.name).includes(normalizedTerm)

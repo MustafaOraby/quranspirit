@@ -13,18 +13,13 @@ interface Zikr {
   filename: string;
 }
 
-interface Category {
-  id: number;
-  category: string;
-  audio: string;
-  filename: string;
-  azkar: Map<number, Zikr>;
-}
+
+
 
 export default function AzkarPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const audioRefs = useRef<{ [key: string]: HTMLAudioElement }>({});
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
 
   const isArabicText = (text: string) => {
     // Regular expression to match Arabic characters and common Arabic symbols
@@ -52,14 +47,7 @@ export default function AzkarPage() {
     }
   };
 
-  const handleAudioPlay = (audioId: string) => {
-    // Pause all other audio elements
-    Object.entries(audioRefs.current).forEach(([id, audioElement]) => {
-      if (id !== audioId) {
-        audioElement.pause();
-      }
-    });
-  };
+
 
   const categories = getAllCategories();
   

@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+
 import { Menu, X, Moon, Sun } from 'lucide-react';
 import clsx from 'clsx';
-import { FaBars, FaTimes } from 'react-icons/fa';
+
 
 const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);

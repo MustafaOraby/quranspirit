@@ -21,8 +21,8 @@ const SingleAuthorPage = () => {
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentSurah, setCurrentSurah] = useState<string | null>(null);
+
+ 
   const [loadingTimeout, setLoadingTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {

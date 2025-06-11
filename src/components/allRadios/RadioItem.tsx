@@ -38,7 +38,7 @@ const RadioItem = ({ radio, isPlaying, onSelect }: RadioItemProps) => {
       </div>
 
       {isPlaying && (
-        <div className=" bg-secondary dark:bg-primary border-t-2 border-gray-300 dark:border-gray-700 fixed bottom-0 left-0 right-0 pt-1 border-t  z-50">
+        <div className=" bg-secondary dark:bg-primary border-t-2 border-gray-300 dark:border-gray-700 fixed bottom-0 left-0 right-0 pt-1   z-50">
           <div className=" mx-auto ">
             <div className="flex items-center justify-between mb-2">
               <span className="font-semibold text-center m-auto">{radio.name}</span>

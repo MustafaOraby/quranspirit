@@ -13,7 +13,6 @@ export default function RadiosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRadioUrl, setSelectedRadioUrl] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const loadRadios = async () => {
@@ -28,7 +27,7 @@ export default function RadiosPage() {
         setLoading(false);
       }
     };
-    
+
     loadRadios();
   }, []);
 
@@ -42,14 +41,12 @@ export default function RadiosPage() {
   };
 
   const isArabicText = (text: string) => {
-    // Regular expression to match Arabic characters and common Arabic symbols
     const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
     return arabicRegex.test(text);
   };
 
   const handleSearch = (term: string) => {
     if (term === '' || isArabicText(term)) {
-      setSearchTerm(term);
       const normalizedTerm = normalizeArabicText(term);
       const filtered = radios.filter(radio =>
         normalizeArabicText(radio.name).includes(normalizedTerm)

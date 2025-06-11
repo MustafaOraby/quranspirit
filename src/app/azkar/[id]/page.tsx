@@ -6,20 +6,14 @@ import { useParams } from 'next/navigation';
 import AudioPlayer, { RHAP_UI } from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 
-interface Zikr {
-  id: number;
-  text: string;
-  count: number;
-  audio: string;
-  filename: string;
-}
+
 
 export default function AzkarCategoryPage() {
   const params = useParams();
   const categoryId = Number(params.id);
   const [category, setCategory] = useState<ReturnType<typeof getCategoryById> | null>(null);
   const [counters, setCounters] = useState<{ [key: string]: number }>({});
-  const [isPlaying, setIsPlaying] = useState(false);
+  
   const playerRefs = useRef<{ [key: string]: AudioPlayer }>({});
 
   useEffect(() => {
@@ -50,7 +44,7 @@ export default function AzkarCategoryPage() {
         player.audio.current.pause();
       }
     });
-    setIsPlaying(true);
+   
   };
 
   if (!category) {
