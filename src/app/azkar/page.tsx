@@ -1,25 +1,18 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { getAllCategories } from '@/Data/azkarMap';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
-interface Zikr {
-  id: number;
-  text: string;
-  count: number;
-  audio: string;
-  filename: string;
-}
+
 
 
 
 
 export default function AzkarPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const audioRefs = useRef<{ [key: string]: HTMLAudioElement }>({});
-  
+
 
   const isArabicText = (text: string) => {
     // Regular expression to match Arabic characters and common Arabic symbols
