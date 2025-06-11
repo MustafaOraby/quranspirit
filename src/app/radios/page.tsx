@@ -1,107 +1,110 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { RadiosData, Radio } from "@/utils/types";
-import "react-h5-audio-player/lib/styles.css";
-import AudioPlayer, { RHAP_UI } from "react-h5-audio-player";
+import { useState, useEffect } from 'react';
+import { fetchRadios } from '@/Data/RadiosData';
+import { Radio } from '@/utils/types';
+import RadioItem from '@/components/allRadios/RadioItem';
+import SearchBar from '@/components/SearchBar';
+import toast from 'react-hot-toast';
 
-
-const QuranRadios = () => {
-  const [radioUrl, setRadioUrl] = useState("");
-  const [autherName, setAutherName] = useState("");
-  const [quranList, setQuranList] = useState<Radio[]>([]);
+export default function RadiosPage() {
+  const [radios, setRadios] = useState<Radio[]>([]);
+  const [filteredRadios, setFilteredRadios] = useState<Radio[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+  const [selectedRadioUrl, setSelectedRadioUrl] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("https://mp3quran.net/api/v3/radios");
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const radioData: RadiosData = await response.json();
-        setQuranList(radioData.radios);
-      } catch {
-        setError("Failed to fetch data");
-      }
-    };
-
-    fetchData();
+    loadRadios();
   }, []);
 
-  useEffect(() => {
-    if (!quranList.length || !radioUrl) return;
-    const index = quranList.findIndex((radio) => radio.url === radioUrl);
-    if (index !== -1) {
-      setAutherName(quranList[index].name);
-      setCurrentIndex(index);
+  const loadRadios = async () => {
+    try {
+      const data = await fetchRadios();
+      setRadios(data);
+      setFilteredRadios(data);
+      setIsLoading(false);
+    } catch (err) {
+      setError('Failed to load radios');
+      setIsLoading(false);
     }
-  }, [radioUrl, quranList]);
+  };
 
-  const handleButtonClick = (itemUrl: string) => {
-    if (radioUrl === itemUrl) {
-      setRadioUrl("");
-      setAutherName("");
-      setCurrentIndex(null);
+  const normalizeArabicText = (text: string) => {
+    return text
+      .replace(/[أإآا]/g, 'ا')
+      .replace(/ى/g, 'ي')
+      .replace(/ة/g, 'ه')
+      .replace(/ؤ/g, 'و')
+      .replace(/ئ/g, 'ي');
+  };
+
+  const isArabicText = (text: string) => {
+    // Regular expression to match Arabic characters and common Arabic symbols
+    const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+    return arabicRegex.test(text);
+  };
+
+  const handleSearch = (term: string) => {
+    if (term === '' || isArabicText(term)) {
+      setSearchTerm(term);
+      const normalizedTerm = normalizeArabicText(term);
+      const filtered = radios.filter(radio =>
+        normalizeArabicText(radio.name).includes(normalizedTerm)
+      );
+      setFilteredRadios(filtered);
     } else {
-      setRadioUrl(itemUrl);
+      toast.error('يرجى البحث باللغة العربية', {
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          background: '#333',
+          color: '#fff',
+          textAlign: 'center',
+          padding: '16px',
+          borderRadius: '8px',
+        },
+      });
     }
   };
 
-  const handleNext = () => {
-    if (currentIndex !== null && currentIndex < quranList.length - 1) {
-      setRadioUrl(quranList[currentIndex + 1].url);
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
+        <div className="text-center">جاري التحميل...</div>
+      </div>
+    );
+  }
 
-  const handlePrev = () => {
-    if (currentIndex !== null && currentIndex > 0) {
-      setRadioUrl(quranList[currentIndex - 1].url);
-    }
-  };
-
-  if (error) return <p>{error}</p>;
+  if (error) {
+    return (
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
+        <div className="text-center text-red-500">{error}</div>
+      </div>
+    );
+  }
 
   return (
-    <section className="p-2">
-      <div className="flex justify-center items-center flex-wrap gap-2 md:gap-5">
-        {quranList.map((radio) => (
-          <button
-            onClick={() => handleButtonClick(radio.url)}
-            key={radio.id}
-            className="bg-background-secondary dark:bg-background-secondary-dark text-text dark:text-text-dark  border-2 border-accent dark:border-accent-dark w-[30%] h-[55px] py-2 flex items-center justify-center active:bg-accent rounded-3xl"
-          >
-            <span className="p-0.5 text-[8px] md:text-[18px] font-semibold xl:font-bold">
-              {radio.name}
-            </span>
-          </button>
-        ))}
+    <main className="min-h-[calc(100vh-64px)] mt-[30px]">
+      <h1 className="text-3xl font-bold text-center mb-8">الإذاعات</h1>
+
+      {/* Search Bar */}
+      <div className="max-w-md mx-auto mb-8">
+        <SearchBar onSearch={handleSearch} />
       </div>
 
-      {radioUrl && currentIndex !== null && (
-        <div className="sticky bottom-0 left-0 right-0 flex flex-col items-center justify-center rounded-t-[30px] text-foreground bg-secondary dark:bg-primary border-t-2 border-gray-300 dark:border-gray-700">
-          <span className="font-bold text-lg text-center p-1">{autherName}</span>
-          <AudioPlayer
-            key={radioUrl}
-            src={radioUrl}
-            autoPlay
-            showSkipControls={true}
-            onClickPrevious={handlePrev}
-            onClickNext={handleNext}
-            showJumpControls={false}
-            customAdditionalControls={[]}
-            customVolumeControls={[RHAP_UI.VOLUME]}
-            layout="horizontal"
-            customProgressBarSection={[
-              RHAP_UI.PROGRESS_BAR,
-              RHAP_UI.CURRENT_TIME,
-            ]}
-            volumeJumpStep={0.1}
-            timeFormat="mm:ss"
+      {/* Radios Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+        {filteredRadios.map((radio) => (
+          <RadioItem
+            key={radio.id}
+            radio={radio}
+            isPlaying={selectedRadioUrl === radio.url}
+            onSelect={setSelectedRadioUrl}
           />
-        </div>
-      )}
-    </section>
+        ))}
+      </div>
+    </main>
   );
-};
-
-export default QuranRadios;
+}

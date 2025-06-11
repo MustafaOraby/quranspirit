@@ -72,14 +72,13 @@ export type SuraList = {
   url: string;
 }
 
-export type Radio = {
-  id: number;              
-  name: string;            
-  url: string;             
-  recent_date: string;     
+export interface Radio {
+  id: number;
+  name: string;
+  url: string;
 }
 
-export type RadiosData = {
+export interface RadiosData {
   radios: Radio[];
 }
 
@@ -89,4 +88,24 @@ export interface Article {
   content: string;
   image?: string;
   date?: string;
+}
+export type AllReciters = {
+  reciters: Reciter[];
+}
+
+export type Reciter = {
+  id: number;
+  name: string;
+  letter: string;
+  date: string;
+  moshaf: Moshaf[]; // افترضنا أن هذا الحقل يحتوي على مصفوفة غير معروفة النوع في الوقت الحالي
+  // authors: Author[];
+};
+export type Moshaf = {
+  id:number;
+  name: string;
+  server: string;
+  surah_total:number;
+  moshaf_type: number;
+  surah_list: string;
 }

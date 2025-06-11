@@ -6,59 +6,47 @@ import { Menu, X, Moon, Sun, Globe } from 'lucide-react';
 import clsx from 'clsx';
 
 const Navbar = () => {
-  const [hasMounted, setHasMounted] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Prevent SSR mismatch
   useEffect(() => {
-    setHasMounted(true);
-
-    // Dark mode preference
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme) {
-      setDarkMode(storedTheme === "dark");
-    } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      setDarkMode(prefersDark);
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(isDark);
+    if (isDark) {
+      document.documentElement.classList.add('dark');
     }
   }, []);
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [darkMode]);
-
-  const toggleDarkMode = () => setDarkMode(prev => !prev);
-
-  if (!hasMounted) return null; // Don't render until client mounted
+  const toggleDarkMode = () => {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    localStorage.setItem('darkMode', String(newDarkMode));
+    document.documentElement.classList.toggle('dark');
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full h-10 bg-background dark:bg-background-dark text-text dark:text-text-dark shadow-md transition-colors">
-      <nav className="max-w-7xl mx-auto  flex h-full items-center justify-between px-4 py-3">
-        <div className="text-xl font-bold tracking-wide">روح القرآن</div>
+      <nav className="max-w-7xl mx-auto flex h-full items-center justify-between px-4 py-3">
+        <div className="text-xl font-bold tracking-wide"><Link href="/">روح القرآن</Link></div>
 
-        {/* <ul className="hidden md:flex gap-6  text-lg font-medium rtl:space-x-reverse">
-          <li className="hover:text-[var(--accent)] transition-colors">
-            <Link href="/radios">إذاعات قرآنية</Link>
-          </li>
-          <li className="hover:text-[var(--accent)] transition-colors">
-            <Link href="/reciters">قراء القرآن</Link>
-          </li>
-          <li className="hover:text-[var(--accent)] transition-colors">
-            <Link href="/azkar">أذكار متنوعة</Link>
-          </li>
-        </ul> */}
+        <div className="hidden md:flex items-center gap-6">
+          <ul className="flex gap-6 text-lg font-medium rtl:space-x-reverse">
+            <li className="hover:text-[var(--accent)] transition-colors">
+              <Link href="/radios">إذاعات قرآنية</Link>
+            </li>
+            <li className="hover:text-[var(--accent)] transition-colors">
+              <Link href="/reciters">قراء القرآن</Link>
+            </li>
+            <li className="hover:text-[var(--accent)] transition-colors">
+              <Link href="/azkar">أذكار متنوعة</Link>
+            </li>
+          </ul>
+        </div>
 
         <div className="flex items-center gap-4">
-          <button aria-label="Toggle Language">
+          {/* <button aria-label="Toggle Language">
             <Globe className="w-6 h-6 hover:text-[var(--accent)] transition-colors" />
-          </button>
+          </button> */}
 
           <button onClick={toggleDarkMode} aria-label="Toggle Theme">
             {darkMode ? (
@@ -83,7 +71,7 @@ const Navbar = () => {
           }
         )}
       >
-        <ul className="  flex flex-col gap-3 items-center justify-center text-center ">
+        <ul className="flex flex-col gap-3 items-center justify-center text-center">
           <li className="hover:text-[var(--accent)] transition-colors">
             <Link href="/radios" onClick={() => setMenuOpen(false)}>إذاعات قرآنية</Link>
           </li>
