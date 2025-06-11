@@ -1,101 +1,107 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import { AllReciters } from "../../utils/types";
-import { fetchReciters } from "../../Data/RecitersData";
-import ReaderItem from "../../components/allReaders/ReaderItem";
-import { Search } from "lucide-react";
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { fetchSearchResults } from '@/lib/api';
+import { useState, useEffect } from 'react';
+import { Radio, Reciter, Surah } from '@/types';
+import RadioItem from '@/components/RadioItem';
+import ReciterItem from '@/components/ReciterItem';
+import SurahItem from '@/components/SurahItem';
 
-const SearchPage = () => {
+function SearchResults() {
   const searchParams = useSearchParams();
-  const query = searchParams.get("q") || "";
-  
-  const [reciters, setReciters] = useState<AllReciters["reciters"]>([]);
-  const [searchTerm, setSearchTerm] = useState(query);
-  const [isLoading, setIsLoading] = useState(true);
+  const query = searchParams.get('q') || '';
+  const [results, setResults] = useState<{
+    radios: Radio[];
+    reciters: Reciter[];
+    surahs: Surah[];
+  }>({ radios: [], reciters: [], surahs: [] });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadReciters = async () => {
+    const search = async () => {
+      if (!query) {
+        setResults({ radios: [], reciters: [], surahs: [] });
+        setLoading(false);
+        return;
+      }
+
       try {
-        const data = await fetchReciters();
-        setReciters(data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error loading reciters:", error);
-        setIsLoading(false);
+        setLoading(true);
+        const data = await fetchSearchResults(query);
+        setResults(data);
+        setError(null);
+      } catch (err) {
+        setError('حدث خطأ أثناء البحث');
+        console.error('Search error:', err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    loadReciters();
-  }, []);
+    search();
+  }, [query]);
 
-  const filteredReciters = reciters.filter(reciter =>
-    reciter.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  if (loading) {
+    return <div className="text-center py-8">جاري البحث...</div>;
+  }
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const url = new URL(window.location.href);
-    url.searchParams.set("q", searchTerm);
-    window.history.pushState({}, "", url);
-  };
+  if (error) {
+    return <div className="text-center py-8 text-red-500">{error}</div>;
+  }
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[calc(100vh-100px)] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mainColor"></div>
-      </div>
-    );
+  if (!query) {
+    return <div className="text-center py-8">الرجاء إدخال كلمة البحث</div>;
+  }
+
+  if (results.radios.length === 0 && results.reciters.length === 0 && results.surahs.length === 0) {
+    return <div className="text-center py-8">لا توجد نتائج</div>;
   }
 
   return (
-    <section className="min-h-[calc(100vh-100px)] w-full flex flex-col items-center p-4">
-      <div className="w-full max-w-4xl">
-        <form onSubmit={handleSearch} className="mb-8">
-          <div className="relative">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="ابحث عن قارئ..."
-              className="w-full px-4 py-3 rounded-full bg-background-secondary dark:bg-background-secondary-dark text-text dark:text-text-dark border border-accent dark:border-accent-dark focus:outline-none focus:ring-2 focus:ring-accent dark:focus:ring-accent-dark text-lg"
-              dir="rtl"
-            />
-            <button
-              type="submit"
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 p-2 hover:text-mainColor transition-colors"
-            >
-              <Search className="w-6 h-6" />
-            </button>
+    <div className="container mx-auto px-4 py-8">
+      {results.radios.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">الإذاعات</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {results.radios.map((radio) => (
+              <RadioItem key={radio.id} radio={radio} />
+            ))}
           </div>
-        </form>
-
-        {searchTerm && (
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold text-center text-gray-600 dark:text-gray-300">
-              نتائج البحث عن: {searchTerm}
-            </h2>
-            <p className="text-center text-gray-500 dark:text-gray-400">
-              {filteredReciters.length} قارئ
-            </p>
-          </div>
-        )}
-
-        <div className="flex flex-wrap justify-center gap-4">
-          {filteredReciters.length > 0 ? (
-            filteredReciters.map((reciter) => (
-              <ReaderItem key={reciter.id} reciter={reciter} />
-            ))
-          ) : (
-            <div className="text-center text-gray-500 dark:text-gray-400 mt-8">
-              {searchTerm ? "لا توجد نتائج" : "اكتب اسم القارئ للبحث"}
-            </div>
-          )}
         </div>
-      </div>
-    </section>
-  );
-};
+      )}
 
-export default SearchPage; 
+      {results.reciters.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">القراء</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {results.reciters.map((reciter) => (
+              <ReciterItem key={reciter.id} reciter={reciter} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {results.surahs.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">السور</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {results.surahs.map((surah) => (
+              <SurahItem key={surah.id} surah={surah} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-8">جاري التحميل...</div>}>
+      <SearchResults />
+    </Suspense>
+  );
+} 
